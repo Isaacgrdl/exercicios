@@ -1,0 +1,24 @@
+#Cria tabela usuario
+
+create table usuario(
+id INT PRIMARY KEY auto_increment,
+cpf varchar(11),
+nome varchar(25)
+);
+
+create table info(
+id INT PRIMARY KEY auto_increment,
+cpf varchar(11),
+genero ENUM('M', "F"),
+ano_nascimento varchar(4)
+);
+
+#CONSULTA
+SELECT CONCAT(u.nome, " - " ,i.genero) as usuario,
+CASE
+    WHEN (2022 - i.ano_nascimento) > 50 THEN "SIM"
+    ELSE "NÃO"
+END as maior_50_anos
+FROM usuario u 
+INNER JOIN info as i ON u.cpf = i.cpf
+WHERE i.genero = "M"
