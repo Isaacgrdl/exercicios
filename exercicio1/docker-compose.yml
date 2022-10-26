@@ -1,0 +1,48 @@
+version: "3.1"
+
+services:
+  #MySQL Service
+  mysql:
+    container_name: mysql
+    image: mysql:5.7.33
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+    - "3306:3306"
+    volumes:
+      - ./infra/mysql/init:/docker-entrypoint-initdb.d
+      - ../data/mysql:/var/lib/mysql
+    networks:
+      - app-network
+  #PHP Service
+  php:
+    container_name: php
+    build:
+      context: ./infra/php
+    restart: unless-stopped
+    volumes:
+      - ../:/var/www
+      - ~/.ssh:/home/www/.ssh
+      - ./infra/php/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+  #Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    volumes:
+      - ../:/var/www
+      - ./infra/nginx/conf.d:/etc/nginx/conf.d
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
